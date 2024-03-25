@@ -9,7 +9,7 @@ import UIKit
 import CoreLocation
 
 final class WeatherViewController: UIViewController {
-    private let viewModel = WeatherViewModel()
+    private var dataSource: WeatherDataSource = WeatherViewModel()
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let currentWeatherView = CurrentWeatherView()
@@ -22,9 +22,9 @@ final class WeatherViewController: UIViewController {
         setUpToolbar()
         setupMainUI()
         
-        viewModel.delegate = self
-        viewModel.requestLocationAuthorization()
-        viewModel.authorizationStatusHandler = { [weak self] status in
+        dataSource.delegate = self
+        dataSource.requestLocationAuthorization()
+        dataSource.authorizationStatusHandler = { [weak self] status in
             self?.showAlertForAuthorizationStatus(status)
         }
     }
@@ -39,14 +39,15 @@ final class WeatherViewController: UIViewController {
 extension WeatherViewController: SearchCityViewControllerDelegate {
     func didCitySelected(cityName: String) {
         let city = cityName.split(separator: " ").joined(separator: "%20")
-        viewModel.fetchWeatherData(for: .cityName(city: city))
+        dataSource.fetchWeatherData(for: .cityName(city: city))
     }
 }
+
 
 //MARK: - WeatherViewModelDelegate
 extension WeatherViewController: WeatherViewModelDelegate {
     func weatherDataDidUpdate() {
-        if let weather = viewModel.currentWeather {
+        if let weather = dataSource.currentWeather {
             currentWeatherView.setupDataFor(cityLabel: weather.city.name, tempLabel: "\(Int(weather.list[0].temp.day))°", conditionCode: weather.list[0].weather[0].id)
             infoWeatherView.setupDataFor(feelsLike: "\(Int(weather.list[0].feelsLike.day))°", humidity: "\(Int(weather.list[0].clouds)) %", wind: "\(Int(weather.list[0].speed)) m/s")
             forecastTableView.forecasts = weather.list
@@ -97,7 +98,7 @@ extension WeatherViewController {
     }
     
     @objc private func myGeoButtonTapped() {
-        viewModel.requestWeatherForCurrentLocation()
+        dataSource.requestWeatherForCurrentLocation()
     }
     
     private func setupMainUI() {

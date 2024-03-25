@@ -13,18 +13,32 @@ protocol WeatherViewModelDelegate: AnyObject {
     func didFailToReceiveWeatherData()
 }
 
-class WeatherViewModel: NSObject {
+protocol WeatherDataSource: AnyObject {
+    var delegate: WeatherViewModelDelegate? { get set }
+    var currentWeather: WeatherModel? { get }
+    var authorizationStatusHandler: WeatherViewModel.AuthorizationStatusHandler? { get set }
+    func requestWeatherForCurrentLocation()
+    func requestLocationAuthorization()
+    func fetchWeatherData(for requestType: RequestType)
+}
+
+class WeatherViewModel: NSObject, WeatherDataSource {
     typealias AuthorizationStatusHandler = (CLAuthorizationStatus) -> Void
     weak var delegate: WeatherViewModelDelegate?
     var authorizationStatusHandler: AuthorizationStatusHandler?
     var currentWeather: WeatherModel?
-    private let networkManager = NetworkWeatherManager.shared
-    private let locationManager = LocationManager()
-    private let userDefaults = UserDefaults.standard
+    private let networkManager: NetworkWeatherManager
+    private let locationManager: LocationManager
+    private let userDefaults: UserDefaults
     
-    override init() {
+    init(networkManager: NetworkWeatherManager = NetworkWeatherManager.shared, 
+         locationManager: LocationManager = LocationManager(),
+         userDefaults: UserDefaults = UserDefaults.standard) {
+        self.networkManager = networkManager
+        self.locationManager = locationManager
+        self.userDefaults = userDefaults
         super.init()
-        locationManager.delegate = self
+        self.locationManager.delegate = self
     }
     
     func requestWeatherForCurrentLocation() {
@@ -39,7 +53,6 @@ class WeatherViewModel: NSObject {
         if let cachedWeather = getCachedWeatherData(forRequestType: requestType) {
             self.currentWeather = cachedWeather
             self.delegate?.weatherDataDidUpdate()
-            print(cachedWeather)
             return
         }
         
