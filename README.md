@@ -14,8 +14,8 @@
 - Работа с сетью через URLSession
 
 ## Пример работы приложения
-![geoRequest](https://github.com/IlyaPavl/VKWeather/assets/83919599/aee01808-7a90-40e3-a5b5-aa004fc8688c)
-https://github.com/IlyaPavl/VKWeather/assets/83919599/27b016b9-9c82-4fe6-bd63-220f6719d7b2
+<img width="456" alt="location2" src="https://github.com/IlyaPavl/VKWeather/assets/83919599/319f706b-11fe-43ad-9ea0-8cfba514aee0">
+https://github.com/IlyaPavl/VKWeather/assets/83919599/dcfe76d8-cfd4-458d-bc80-22e06c4c56a1
 
 ### Note: 
 - Для того, чтобы протестировать работу по геопозиции через симулятор необходимо выбрать в Xcode в строке с выбором устройства симулятора следующее: VKWeather -> Edit Scheme -> Run -> Options -> Allow Location Simulation -> Default Location -> Выбрать из списка
