@@ -6,3 +6,6 @@
 //
 
 import Foundation
+protocol NetworkServiceProtocol: AnyObject {
+    func fetchCurrentWeather(forRequestType requestType: RequestType, completion: @escaping (Result<WeatherModel, Error>) -> Void)
+}

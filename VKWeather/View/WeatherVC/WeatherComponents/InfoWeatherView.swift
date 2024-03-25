@@ -1,5 +1,5 @@
 //
-//  InfoWeatherBlock.swift
+//  InfoWeatherView.swift
 //  VKWeather
 //
 //  Created by ily.pavlov on 23.03.2024.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class InfoWeatherBlock: UIView {
+final class InfoWeatherView: UIView {
     private let mainStack = UIStackView()
     private let feelsLikeStack = UIStackView()
     private let humidityStack = UIStackView()
@@ -39,14 +39,14 @@ class InfoWeatherBlock: UIView {
     }
 }
 //MARK: - setupInfoUI
-extension InfoWeatherBlock {
+extension InfoWeatherView {
     private func setupInfoUI() {
         setupStack(stack: mainStack, axis: .horizontal, alignment: .center, spacing: spacing, distribution: .fillEqually, cornerRadius: cornerRadius)
         setupStack(stack: feelsLikeStack, axis: .vertical, alignment: .center, spacing: spacing, distribution: .fillProportionally, cornerRadius: cornerRadius)
         setupText(label: feelsLikeText, text: "Feels like", textColor: .white, fontSize: textFontSize, fontWeight: .semibold)
         setupText(label: feelsLikeLabel, text: nil, textColor: .white, fontSize: labelFontSize, fontWeight: .black)
         setupStack(stack: humidityStack, axis: .vertical, alignment: .center, spacing: spacing, distribution: .fillProportionally, cornerRadius: cornerRadius)
-        setupText(label: humidityText, text: "Humidity", textColor: .white, fontSize: textFontSize, fontWeight: .semibold)
+        setupText(label: humidityText, text: "Cloudness", textColor: .white, fontSize: textFontSize, fontWeight: .semibold)
         setupText(label: humidityLabel, text: nil, textColor: .white, fontSize: labelFontSize, fontWeight: .black)
         setupStack(stack: windStack, axis: .vertical, alignment: .center, spacing: spacing, distribution: .fillProportionally, cornerRadius: cornerRadius)
         setupText(label: windText, text: "Wind Speed", textColor: .white, fontSize: textFontSize, fontWeight: .semibold)

@@ -6,3 +6,9 @@
 //
 
 import Foundation
+import CoreLocation
+
+enum RequestType {
+    case cityName(city: String)
+    case coordinate(latitude: CLLocationDegrees, longitude: CLLocationDegrees)
+}

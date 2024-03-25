@@ -1,5 +1,5 @@
 //
-//  Constants.swift
+//  Static.swift
 //  VKWeather
 //
 //  Created by ily.pavlov on 22.03.2024.
@@ -42,21 +42,4 @@ func systemIconNameString(for conditionCode: Int) -> String {
     case 801...804: return "cloud.fill"
     default: return "nosign"
     }
-}
-
-func addBlurEffect(to view: UIView) {
-    let blurEffect = UIBlurEffect(style: .extraLight)
-    let blurEffectView = UIVisualEffectView(effect: blurEffect)
-    blurEffectView.translatesAutoresizingMaskIntoConstraints = false
-    blurEffectView.clipsToBounds = true
-    blurEffectView.layer.cornerRadius = cornerRadius
-    
-    view.insertSubview(blurEffectView, at: 0)
-    
-    NSLayoutConstraint.activate([
-        blurEffectView.topAnchor.constraint(equalTo: view.topAnchor),
-        blurEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-        blurEffectView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        blurEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-    ])
 }

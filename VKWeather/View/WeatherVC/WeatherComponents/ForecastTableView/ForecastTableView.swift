@@ -1,5 +1,5 @@
 //
-//  ForecastTableViewController.swift
+//  ForecastTableView.swift
 //  VKWeather
 //
 //  Created by ily.pavlov on 23.03.2024.
@@ -7,14 +7,14 @@
 
 import UIKit
 
-class ForecastTableView: UITableView, UITableViewDataSource, UITableViewDelegate {
+final class ForecastTableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     var forecasts = [List]()
     
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
         setupTableUI()
-        self.dataSource = self
-        self.delegate = self
+        dataSource = self
+        delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -24,20 +24,15 @@ class ForecastTableView: UITableView, UITableViewDataSource, UITableViewDelegate
     private func setupTableUI() {
         self.register(ForecastTableViewCell.self, forCellReuseIdentifier: ForecastTableViewCell.identifier)
         self.separatorStyle = .singleLine
-        self.separatorColor = .systemGray4
+        self.separatorColor = .systemGray5
         self.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         self.isScrollEnabled = false
         self.isUserInteractionEnabled = false
     }
     
-    // MARK: - Table view data source
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
+    func numberOfSections(in tableView: UITableView) -> Int { return 1 }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return forecasts.count
-    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return forecasts.count }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ForecastTableViewCell.identifier, for: indexPath) as! ForecastTableViewCell
@@ -49,10 +44,5 @@ class ForecastTableView: UITableView, UITableViewDataSource, UITableViewDelegate
         return cell
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 47
-    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { return 47 }
 }
-
-    
-

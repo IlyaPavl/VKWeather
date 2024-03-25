@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ForecastTableViewCell: UITableViewCell {
+final class ForecastTableViewCell: UITableViewCell {
     
     static let identifier = "ForecastCell"
     
@@ -35,6 +35,7 @@ class ForecastTableViewCell: UITableViewCell {
     }
 }
 
+//MARK: - setupCellUI
 extension ForecastTableViewCell {
     private func setupCellUI() {
         setupStack(stack: tableStack, axis: .horizontal, alignment: .center, spacing: spacing, distribution: .fillEqually, cornerRadius: cornerRadius)

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CurrentWeatherBlock: UIView {
+final class CurrentWeatherView: UIView {
     private let stackView = UIStackView()
     private let cityLabel = UILabel()
     private let tempLabel = UILabel()
@@ -32,7 +32,7 @@ class CurrentWeatherBlock: UIView {
     }
 }
 //MARK: - setupCurrentWeatherUI
-extension CurrentWeatherBlock {
+extension CurrentWeatherView {
     private func setupCurrentWeatherUI() {
         setupStack(stack: stackView, axis: .vertical, alignment: .center, spacing: spacing, distribution: nil, cornerRadius: cornerRadius)
         setupText(label: cityLabel, text: nil, textColor: .white, fontSize: cityLabelFontSize, fontWeight: .bold)

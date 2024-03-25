@@ -12,49 +12,55 @@ final class WeatherViewController: UIViewController {
     private let viewModel = WeatherViewModel()
     private let scrollView = UIScrollView()
     private let contentView = UIView()
-    private let currentWeatherBlock = CurrentWeatherBlock()
-    private let infoweatherBlock = InfoWeatherBlock()
-    private let forecastTableBlock = ForecastTableViewController()
-    private let defaultCurrentWeatherBlockHeight: CGFloat = 250
+    private let currentWeatherView = CurrentWeatherView()
+    private let infoWeatherView = InfoWeatherView()
+    private let forecastTableView = ForecastTableView()
     
     override func viewDidLoad() {
-        print(#function)
         super.viewDidLoad()
         setupBG()
         setUpToolbar()
-        setupUI()
+        setupMainUI()
+        
         viewModel.delegate = self
         viewModel.requestLocationAuthorization()
+        viewModel.authorizationStatusHandler = { [weak self] status in
+            self?.showAlertForAuthorizationStatus(status)
+        }
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        scrollView.contentSize = CGSize(width: view.frame.width, height: currentWeatherBlock.frame.height + infoweatherBlock.frame.height + forecastTableBlock.view.frame.height + 200)
+        scrollView.contentSize = CGSize(width: view.frame.width, height: currentWeatherView.frame.height + infoWeatherView.frame.height + forecastTableView.frame.height + 100)
     }
 }
+
+//MARK: - SearchCityViewControllerDelegate
+extension WeatherViewController: SearchCityViewControllerDelegate {
+    func didCitySelected(cityName: String) {
+        let city = cityName.split(separator: " ").joined(separator: "%20")
+        viewModel.fetchWeatherData(for: .cityName(city: city))
+    }
+}
+
 
 //MARK: - WeatherViewModelDelegate
 extension WeatherViewController: WeatherViewModelDelegate {
     func weatherDataDidUpdate() {
-        if let list = viewModel.weatherModel?.list,
-           let city = viewModel.weatherModel?.city,
-           let conditionCode = viewModel.weatherModel?.list[0].weather[0].id,
-           let feelsLike = viewModel.weatherModel?.list[0].feelsLike.day,
-           let humidity = viewModel.weatherModel?.list[0].humidity,
-           let wind = viewModel.weatherModel?.list[0].speed {
-            currentWeatherBlock.setupDataFor(cityLabel: city.name, tempLabel: "\(Int(list[0].temp.day))°", conditionCode: conditionCode)
-            infoweatherBlock.setupDataFor(feelsLike: "\(Int(feelsLike))°", humidity: "\(Int(humidity)) %", wind: "\(Int(wind)) m/s")
-            forecastTableBlock.forecasts = list
-            forecastTableBlock.tableView.reloadData()
+        if let weather = viewModel.currentWeather {
+            currentWeatherView.setupDataFor(cityLabel: weather.city.name, tempLabel: "\(Int(weather.list[0].temp.day))°", conditionCode: weather.list[0].weather[0].id)
+            infoWeatherView.setupDataFor(feelsLike: "\(Int(weather.list[0].feelsLike.day))°", humidity: "\(Int(weather.list[0].clouds)) %", wind: "\(Int(weather.list[0].speed)) m/s")
+            forecastTableView.forecasts = weather.list
+            forecastTableView.reloadData()
         }
     }
-}
-
-extension WeatherViewController: SearchCityDelegate {
-    func didSearchCity(cityName: String) {
-        viewModel.fetchWeatherData(for: .cityName(city: cityName))
-    }
     
+    func didFailToReceiveWeatherData() {
+        let alertController = UIAlertController(title: "City not found", message: "Entered city wasn't found. Try again and make sure that city presents or supported by OpenWeather API", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
     
 }
 
@@ -86,8 +92,8 @@ extension WeatherViewController {
     }
     
     @objc private func searchButtonTapped() {
-        let searchCityViewController = SearchViewController()
-        searchCityViewController.delegate = self
+        let searchCityViewController = SearchCityViewController()
+        searchCityViewController.cityDelegate = self
         present(searchCityViewController, animated: true, completion: nil)
     }
     
@@ -95,7 +101,7 @@ extension WeatherViewController {
         viewModel.requestWeatherForCurrentLocation()
     }
     
-    private func setupUI() {
+    private func setupMainUI() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         scrollView.showsVerticalScrollIndicator = false
@@ -117,33 +123,58 @@ extension WeatherViewController {
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
         
-        contentView.addSubview(currentWeatherBlock)
-        contentView.addSubview(infoweatherBlock)
-        contentView.addSubview(forecastTableBlock.view)
+        contentView.addSubview(currentWeatherView)
+        contentView.addSubview(infoWeatherView)
+        contentView.addSubview(forecastTableView)
         
-        currentWeatherBlock.translatesAutoresizingMaskIntoConstraints = false
-        infoweatherBlock.translatesAutoresizingMaskIntoConstraints = false
-        forecastTableBlock.view.translatesAutoresizingMaskIntoConstraints = false
+        currentWeatherView.translatesAutoresizingMaskIntoConstraints = false
+        infoWeatherView.translatesAutoresizingMaskIntoConstraints = false
+        forecastTableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            currentWeatherBlock.topAnchor.constraint(equalTo: contentView.topAnchor),
-            currentWeatherBlock.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            currentWeatherBlock.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            //            currentWeatherBlock.heightAnchor.constraint(equalToConstant: defaultCurrentWeatherBlockHeight),
+            currentWeatherView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            currentWeatherView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            currentWeatherView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            infoweatherBlock.topAnchor.constraint(equalTo: currentWeatherBlock.bottomAnchor, constant: 20),
-            infoweatherBlock.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            infoweatherBlock.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            infoWeatherView.topAnchor.constraint(equalTo: currentWeatherView.bottomAnchor, constant: 20),
+            infoWeatherView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            infoWeatherView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            forecastTableBlock.view.topAnchor.constraint(equalTo: infoweatherBlock.bottomAnchor, constant: 20),
-            forecastTableBlock.view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            forecastTableBlock.view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            forecastTableBlock.view.heightAnchor.constraint(equalToConstant: 327),
+            forecastTableView.topAnchor.constraint(equalTo: infoWeatherView.bottomAnchor, constant: 20),
+            forecastTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            forecastTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            forecastTableView.heightAnchor.constraint(equalToConstant: 327),
         ])
         
-        currentWeatherBlock.backgroundColor = mainBGColor
-        currentWeatherBlock.layer.cornerRadius = cornerRadius + 5
-        forecastTableBlock.view.layer.cornerRadius = cornerRadius
-        forecastTableBlock.view.backgroundColor = mainBGColor
+        currentWeatherView.backgroundColor = mainBGColor
+        currentWeatherView.layer.cornerRadius = cornerRadius + 5
+        forecastTableView.layer.cornerRadius = cornerRadius
+        forecastTableView.backgroundColor = mainBGColor
+    }
+    
+    private func showAlertForAuthorizationStatus(_ status: CLAuthorizationStatus) {
+        let alertController: UIAlertController
+        
+        switch status {
+        case .authorizedWhenInUse:
+            return
+        case .denied:
+            alertController = UIAlertController(title: "Location Access Denied", message: "Please enable location access in Settings to properly show weather", preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "Settings", style: .default, handler: { _ in
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+            }))
+            alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        case .restricted:
+            alertController = UIAlertController(title: "Location Access Restricted", message: "Location access is restricted on this device", preferredStyle: .alert)
+        case .notDetermined:
+            alertController = UIAlertController(title: "Location Access Not Determined", message: "Location access has not been determined yet", preferredStyle: .alert)
+        case .authorizedAlways:
+            return
+        @unknown default:
+            fatalError("Unhandled CLAuthorizationStatus case.")
+        }
+        
+        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alertController, animated: true, completion: nil)
     }
 }
