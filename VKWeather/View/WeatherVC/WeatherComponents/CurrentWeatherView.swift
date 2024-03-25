@@ -14,6 +14,7 @@ final class CurrentWeatherView: UIView {
     private let weatherIcon = UIImageView()
     private let cityLabelFontSize: CGFloat = 25
     private let tempLabelFontSize: CGFloat = 70
+    private let weatherIconSize: CGFloat = 65
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -59,8 +60,8 @@ extension CurrentWeatherView {
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
         ])
         NSLayoutConstraint.activate([
-            weatherIcon.widthAnchor.constraint(equalToConstant: 65),
-            weatherIcon.heightAnchor.constraint(equalToConstant: 65)
+            weatherIcon.widthAnchor.constraint(equalToConstant: weatherIconSize),
+            weatherIcon.heightAnchor.constraint(equalToConstant: weatherIconSize)
         ])
     }
 }

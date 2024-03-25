@@ -16,6 +16,7 @@ final class SearchResultsTableView: UITableView, UITableViewDataSource, UITableV
     
     var searchResults: [MKLocalSearchCompletion] = []
     weak var searchDelegate: SearchResultsTableViewDelegate?
+    private let cellHeight: CGFloat = 40
     
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
@@ -46,7 +47,7 @@ final class SearchResultsTableView: UITableView, UITableViewDataSource, UITableV
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 40
+        return cellHeight
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

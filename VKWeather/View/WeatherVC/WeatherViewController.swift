@@ -16,6 +16,9 @@ final class WeatherViewController: UIViewController {
     private let infoWeatherView = InfoWeatherView()
     private let forecastTableView = ForecastTableView()
     
+    private let backgroundOpacity: Float = 0.9
+    private let defaultForecastTableViewHeight: CGFloat = 327
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupBG()
@@ -70,7 +73,7 @@ extension WeatherViewController {
         let backgroundImageView = UIImageView(frame: UIScreen.main.bounds)
         backgroundImageView.image = UIImage(named: "background")
         backgroundImageView.contentMode = .scaleAspectFill
-        backgroundImageView.layer.opacity = 0.9
+        backgroundImageView.layer.opacity = backgroundOpacity
         view.addSubview(backgroundImageView)
         view.sendSubviewToBack(backgroundImageView)
     }
@@ -133,17 +136,17 @@ extension WeatherViewController {
         
         NSLayoutConstraint.activate([
             currentWeatherView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            currentWeatherView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            currentWeatherView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            currentWeatherView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: commonOffset),
+            currentWeatherView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -commonOffset),
             
-            infoWeatherView.topAnchor.constraint(equalTo: currentWeatherView.bottomAnchor, constant: 20),
-            infoWeatherView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            infoWeatherView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            infoWeatherView.topAnchor.constraint(equalTo: currentWeatherView.bottomAnchor, constant: commonOffset),
+            infoWeatherView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: commonOffset),
+            infoWeatherView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -commonOffset),
             
-            forecastTableView.topAnchor.constraint(equalTo: infoWeatherView.bottomAnchor, constant: 20),
-            forecastTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            forecastTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            forecastTableView.heightAnchor.constraint(equalToConstant: 327),
+            forecastTableView.topAnchor.constraint(equalTo: infoWeatherView.bottomAnchor, constant: commonOffset),
+            forecastTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: commonOffset),
+            forecastTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -commonOffset),
+            forecastTableView.heightAnchor.constraint(equalToConstant: defaultForecastTableViewHeight),
         ])
         
         currentWeatherView.backgroundColor = mainBGColor

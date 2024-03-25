@@ -13,6 +13,7 @@ let daysForecast = 7
 
 let cornerRadius: CGFloat = 15
 let spacing: CGFloat = 5
+let commonOffset: CGFloat = 20
 let mainBGColor = UIColor.black.withAlphaComponent(0.03)
 
 func setupStack(stack: UIStackView, axis: NSLayoutConstraint.Axis, alignment: UIStackView.Alignment, spacing: CGFloat, distribution: UIStackView.Distribution?, cornerRadius: CGFloat) {

@@ -15,6 +15,8 @@ final class ForecastTableViewCell: UITableViewCell {
     private let miniWeatherIcon = UIImageView()
     private let minTempLabel = UILabel()
     private let maxTempLabel = UILabel()
+    private let weekdayTextSize: CGFloat = 17
+    private let tableStackOffset: CGFloat = 10
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -38,11 +40,11 @@ final class ForecastTableViewCell: UITableViewCell {
 extension ForecastTableViewCell {
     private func setupCellUI() {
         setupStack(stack: tableStack, axis: .horizontal, alignment: .center, spacing: spacing, distribution: .fillEqually, cornerRadius: cornerRadius)
-        setupText(label: weekdayLabel, text: nil, textColor: .white, fontSize: 17, fontWeight: .bold)
+        setupText(label: weekdayLabel, text: nil, textColor: .white, fontSize: weekdayTextSize, fontWeight: .bold)
         miniWeatherIcon.tintColor = .white
         miniWeatherIcon.contentMode = .center
-        setupText(label: minTempLabel, text: nil, textColor: .white, fontSize: 17, fontWeight: .medium)
-        setupText(label: maxTempLabel, text: nil, textColor: .white, fontSize: 17, fontWeight: .medium)
+        setupText(label: minTempLabel, text: nil, textColor: .white, fontSize: weekdayTextSize, fontWeight: .medium)
+        setupText(label: maxTempLabel, text: nil, textColor: .white, fontSize: weekdayTextSize, fontWeight: .medium)
 
         tableStack.addArrangedSubview(weekdayLabel)
         tableStack.addArrangedSubview(miniWeatherIcon)
@@ -52,10 +54,10 @@ extension ForecastTableViewCell {
         
         tableStack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            tableStack.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            tableStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            tableStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            tableStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
+            tableStack.topAnchor.constraint(equalTo: topAnchor, constant: tableStackOffset),
+            tableStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: tableStackOffset),
+            tableStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -tableStackOffset),
+            tableStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -tableStackOffset)
         ])
     }
 }

@@ -9,6 +9,7 @@ import UIKit
 
 final class ForecastTableView: UITableView, UITableViewDataSource, UITableViewDelegate {
     var forecasts = [List]()
+    private let tableRowHeight: CGFloat = 47
     
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
@@ -44,5 +45,5 @@ final class ForecastTableView: UITableView, UITableViewDataSource, UITableViewDe
         return cell
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { return 47 }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { return tableRowHeight }
 }
