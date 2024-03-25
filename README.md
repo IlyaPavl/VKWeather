@@ -12,6 +12,7 @@
 - Для организации поиска использовался MKLocalSearch
 - MVVM
 - Работа с сетью через URLSession
+- Поодерживается кэширование данных
 
 ## Запрос геопозиции при первом старте 
 <img width="456" alt="location2" src="https://github.com/IlyaPavl/VKWeather/assets/83919599/319f706b-11fe-43ad-9ea0-8cfba514aee0">
