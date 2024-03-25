@@ -14,6 +14,7 @@
 - Работа с сетью через URLSession
 
 ## Пример работы приложения
+![geoRequest](https://github.com/IlyaPavl/VKWeather/assets/83919599/aee01808-7a90-40e3-a5b5-aa004fc8688c)
 https://github.com/IlyaPavl/VKWeather/assets/83919599/27b016b9-9c82-4fe6-bd63-220f6719d7b2
 
 ### Note: 
