@@ -13,6 +13,9 @@
 - MVVM
 - Работа с сетью через URLSession
 
+## Пример работы приложения
+https://github.com/IlyaPavl/VKWeather/assets/83919599/27b016b9-9c82-4fe6-bd63-220f6719d7b2
+
 ### Note: 
 - Для того, чтобы протестировать работу по геопозиции через симулятор необходимо выбрать в Xcode в строке с выбором устройства симулятора следующее: VKWeather -> Edit Scheme -> Run -> Options -> Allow Location Simulation -> Default Location -> Выбрать из списка
 <img width="938" alt="location1" src="https://github.com/IlyaPavl/VKWeather/assets/83919599/4bffc250-11b3-45a0-80b3-f9fcaffdef5b">
