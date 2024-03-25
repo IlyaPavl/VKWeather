@@ -43,7 +43,6 @@ extension WeatherViewController: SearchCityViewControllerDelegate {
     }
 }
 
-
 //MARK: - WeatherViewModelDelegate
 extension WeatherViewController: WeatherViewModelDelegate {
     func weatherDataDidUpdate() {

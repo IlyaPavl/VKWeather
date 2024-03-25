@@ -1,5 +1,5 @@
 //
-//  SearchTableViewController.swift
+//  SearchResultsTableView.swift
 //  VKWeather
 //
 //  Created by ily.pavlov on 24.03.2024.

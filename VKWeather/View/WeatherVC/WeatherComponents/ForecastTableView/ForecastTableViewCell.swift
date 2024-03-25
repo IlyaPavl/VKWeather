@@ -10,7 +10,6 @@ import UIKit
 final class ForecastTableViewCell: UITableViewCell {
     
     static let identifier = "ForecastCell"
-    
     private let tableStack = UIStackView()
     private let weekdayLabel = UILabel()
     private let miniWeatherIcon = UIImageView()
