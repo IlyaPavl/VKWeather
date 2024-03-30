@@ -13,32 +13,23 @@ protocol WeatherViewModelDelegate: AnyObject {
     func didFailToReceiveWeatherData()
 }
 
-protocol WeatherDataSource: AnyObject {
-    var delegate: WeatherViewModelDelegate? { get set }
-    var currentWeather: WeatherModel? { get }
-    var authorizationStatusHandler: WeatherViewModel.AuthorizationStatusHandler? { get set }
-    func requestWeatherForCurrentLocation()
-    func requestLocationAuthorization()
-    func fetchWeatherData(for requestType: RequestType)
-}
-
-class WeatherViewModel: NSObject, WeatherDataSource {
+class WeatherViewModel: NSObject {
     typealias AuthorizationStatusHandler = (CLAuthorizationStatus) -> Void
+    
+    private var networkManager = NetworkWeatherManager.shared
     weak var delegate: WeatherViewModelDelegate?
+    private var locationManager = CLLocationManager()
     var authorizationStatusHandler: AuthorizationStatusHandler?
     var currentWeather: WeatherModel?
-    private let networkManager: NetworkWeatherManager
-    private let locationManager: LocationManager
     private let userDefaults: UserDefaults
+
     
-    init(networkManager: NetworkWeatherManager = NetworkWeatherManager.shared, 
-         locationManager: LocationManager = LocationManager(),
+    init(networkManager: NetworkWeatherManager = NetworkWeatherManager.shared,
          userDefaults: UserDefaults = UserDefaults.standard) {
         self.networkManager = networkManager
-        self.locationManager = locationManager
         self.userDefaults = userDefaults
         super.init()
-        self.locationManager.delegate = self
+        locationManager.delegate = self
     }
     
     func requestWeatherForCurrentLocation() {
@@ -46,7 +37,7 @@ class WeatherViewModel: NSObject, WeatherDataSource {
     }
     
     func requestLocationAuthorization() {
-        locationManager.requestAuthorization()
+        locationManager.requestWhenInUseAuthorization()
     }
     
     func fetchWeatherData(for requestType: RequestType) {
@@ -99,21 +90,24 @@ class WeatherViewModel: NSObject, WeatherDataSource {
     }
 }
 
-// MARK: - LocationManagerDelegate
-extension WeatherViewModel: LocationManagerDelegate {
-    func didUpdateLocation(latitude: Double, longitude: Double) {
+extension WeatherViewModel: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        let longitude = location.coordinate.longitude
+        let latitude = location.coordinate.latitude
         fetchWeatherData(for: .coordinate(latitude: latitude, longitude: longitude))
+        manager.stopUpdatingLocation()
     }
     
-    func didFailWithError(_ error: Error) {
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print(error.localizedDescription)
-        print("If you are using Xcode simulator - choose location in top menu Features -> Location -> ")
+        print("If you are using Xcode simulator - choose location in up menu Features -> Location -> ")
     }
     
-    func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
         case .authorizedWhenInUse:
-            locationManager.requestLocation()
+            manager.startUpdatingLocation()
         case .denied, .restricted:
             print("Location services authorization denied or restricted.")
         case .notDetermined:
