@@ -8,8 +8,8 @@
 import Foundation
 import CoreLocation
 
-protocol WeatherViewModelDelegate: AnyObject {
-    func weatherDataDidUpdate()
+protocol WeatherUpdateObserver: AnyObject {
+    func didUpdateWeatherData()
     func didFailToReceiveWeatherData()
 }
 
@@ -17,12 +17,11 @@ class WeatherViewModel: NSObject {
     typealias AuthorizationStatusHandler = (CLAuthorizationStatus) -> Void
     
     private var networkManager = NetworkWeatherManager.shared
-    weak var delegate: WeatherViewModelDelegate?
+    private var observers = [WeatherUpdateObserver]()
     private var locationManager = CLLocationManager()
+    private let userDefaults: UserDefaults
     var authorizationStatusHandler: AuthorizationStatusHandler?
     var currentWeather: WeatherModel?
-    private let userDefaults: UserDefaults
-
     
     init(networkManager: NetworkWeatherManager = NetworkWeatherManager.shared,
          userDefaults: UserDefaults = UserDefaults.standard) {
@@ -30,6 +29,24 @@ class WeatherViewModel: NSObject {
         self.userDefaults = userDefaults
         super.init()
         locationManager.delegate = self
+    }
+    
+    func addObserver(_ observer: WeatherUpdateObserver) {
+        observers.append(observer)
+    }
+    
+    func removeObserver(_ observer: WeatherUpdateObserver) {
+        if let index = observers.firstIndex(where: { $0 === observer }) {
+            observers.remove(at: index)
+        }
+    }
+    
+    private func notifyWeatherDataUpdate() {
+        observers.forEach { $0.didUpdateWeatherData() }
+    }
+    
+    private func notifyWeatherDataFailure() {
+        observers.forEach { $0.didFailToReceiveWeatherData() }
     }
     
     func requestWeatherForCurrentLocation() {
@@ -43,7 +60,7 @@ class WeatherViewModel: NSObject {
     func fetchWeatherData(for requestType: RequestType) {
         if let cachedWeather = getCachedWeatherData(forRequestType: requestType) {
             self.currentWeather = cachedWeather
-            self.delegate?.weatherDataDidUpdate()
+            self.notifyWeatherDataUpdate() // Уведомляем подписчиков об обновлении данных
             return
         }
         
@@ -54,9 +71,9 @@ class WeatherViewModel: NSObject {
                 case .success(let weather):
                     self?.cacheWeatherData(weather, forRequestType: requestType)
                     self?.currentWeather = weather
-                    self?.delegate?.weatherDataDidUpdate()
+                    self?.notifyWeatherDataUpdate() // Уведомляем подписчиков об обновлении данных
                 case .failure(_):
-                    self?.delegate?.didFailToReceiveWeatherData()
+                    self?.notifyWeatherDataFailure() // Уведомляем подписчиков о неудачном получении данных
                     print("fetchWeatherData Error for cityName")
                 }
             }
@@ -66,14 +83,15 @@ class WeatherViewModel: NSObject {
                 case .success(let weather):
                     self?.cacheWeatherData(weather, forRequestType: requestType)
                     self?.currentWeather = weather
-                    self?.delegate?.weatherDataDidUpdate()
+                    self?.notifyWeatherDataUpdate() // Уведомляем подписчиков об обновлении данных
                 case .failure(_):
-                    self?.delegate?.didFailToReceiveWeatherData()
+                    self?.notifyWeatherDataFailure() // Уведомляем подписчиков о неудачном получении данных
                     print("fetchWeatherData Error for coordinate")
                 }
             }
         }
     }
+
     
     private func cacheWeatherData(_ weather: WeatherModel, forRequestType requestType: RequestType) {
         if let encoded = try? JSONEncoder().encode(weather) {

@@ -25,7 +25,7 @@ final class WeatherViewController: UIViewController {
         setUpToolbar()
         setupMainUI()
         
-        viewModel.delegate = self
+        viewModel.addObserver(self)
         viewModel.requestLocationAuthorization()
         viewModel.authorizationStatusHandler = { [weak self] status in
             self?.showAlertForAuthorizationStatus(status)
@@ -35,6 +35,10 @@ final class WeatherViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scrollView.contentSize = CGSize(width: view.frame.width, height: currentWeatherView.frame.height + infoWeatherView.frame.height + forecastTableView.frame.height + 100)
+    }
+    
+    deinit {
+        viewModel.removeObserver(self)
     }
 }
 
@@ -48,8 +52,9 @@ extension WeatherViewController: SearchCityViewControllerDelegate {
 
 
 //MARK: - WeatherViewModelDelegate
-extension WeatherViewController: WeatherViewModelDelegate {
-    func weatherDataDidUpdate() {
+extension WeatherViewController: WeatherUpdateObserver {
+    func didUpdateWeatherData() {
+        // Обработка обновления данных о погоде
         if let weather = viewModel.currentWeather {
             currentWeatherView.setupDataFor(cityLabel: weather.city.name, tempLabel: "\(Int(weather.list[0].temp.day))°", conditionCode: weather.list[0].weather[0].id)
             infoWeatherView.setupDataFor(feelsLike: "\(Int(weather.list[0].feelsLike.day))°", humidity: "\(Int(weather.list[0].clouds)) %", wind: "\(Int(weather.list[0].speed)) m/s")
@@ -59,6 +64,7 @@ extension WeatherViewController: WeatherViewModelDelegate {
     }
     
     func didFailToReceiveWeatherData() {
+        // Обработка неудачного получения данных о погоде
         let alertController = UIAlertController(title: "City not found", message: "Entered city wasn't found. Try again and make sure that city presents or supported by OpenWeather API", preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
         alertController.addAction(okAction)
